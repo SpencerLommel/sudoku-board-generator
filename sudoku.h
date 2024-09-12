@@ -6,15 +6,7 @@
 #define SUDOKU_H
 
 typedef struct {
-    int row_1 [9];
-    int row_2 [9];
-    int row_3 [9];
-    int row_4 [9];
-    int row_5 [9];
-    int row_6 [9];
-    int row_7 [9];
-    int row_8 [9];
-    int row_9 [9];
+    int board[9][9];
 } sudoku_board_t;
 
 typedef enum {
