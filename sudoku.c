@@ -77,3 +77,12 @@ static int get_box_value_from_cell(int cell) {
 
         return found ? num : 0;  // Return 0 if all numbers are excluded
     }
+
+
+static bool valueinarray(float val, float *arr, size_t n) {
+    for(size_t i = 0; i < n; i++) {
+        if(arr[i] == val)
+            return true;
+    }
+    return false;
+}
