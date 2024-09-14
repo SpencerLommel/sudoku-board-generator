@@ -5,10 +5,7 @@
 // Sept. 11th, 2024
 
 int main() {
-    sudoku_board_t sudoku_board;
+  sudoku_board_t sudoku_board;
 
-    sudoku_init(&sudoku_board);
-
-
-
+  sudoku_init(&sudoku_board);
 }
