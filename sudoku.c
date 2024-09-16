@@ -10,6 +10,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+static int gen_random_with_exclusion_arr(uint8_t excluded[9]);
+static uint8_t get_box_value_from_cell(uint8_t cell);
+
 // Necessary so people can index this with the error value
 // from their program to know what the issue is.
 const char *sudoku_error_strings[] = {"NO_ERROR", "NULL_PTR_ERROR"};
@@ -30,11 +33,14 @@ sudoku_error_t sudoku_init(sudoku_board_t *sudoku_board) {
 }
 
 sudoku_error_t sudoku_generate_filled(sudoku_board_t *sudoku_board) {
+  uint8_t excl_arr[9] = {0};
   for (uint8_t y = 0; y < 9; y++) {
     for (uint8_t x = 0; x < 9; x++) {
-      sudoku_board->board[x][y];
+      sudoku_board->board[x][y] = gen_random_with_exclusion_arr(excl_arr);
     }
   }
+
+  return NO_ERROR;
 }
 
 // Static methods
@@ -79,10 +85,11 @@ static bool valueinarray(float val, float *arr, size_t n) {
   return false;
 }
 
-static int *get_int_arr_of_section(sudoku_board_t *sudoku_board,
+static void get_int_arr_of_section(sudoku_board_t *sudoku_board,
                                    sudoku_section_t section, uint8_t x,
-                                   uint8_t y) {
-  uint8_t section_values[9] = {-1};
+                                   uint8_t y, uint8_t section_values[9]) {
+  // Must pass array of size 9 in section_values. This is okay because in
+  // columns, rows, and boxes there can only be 9 nums at most
   if (section == ROW) {
     for (uint8_t i = 0; i < 9; i++) {
       section_values[i] = sudoku_board->board[i][y];
@@ -94,12 +101,10 @@ static int *get_int_arr_of_section(sudoku_board_t *sudoku_board,
     }
   }
   if (section == BOX) {
-    for (uint8_t i = 0; i < 3; i++) {
-      for (uint8_t k = 0; k < 3; k++) {
+    for (uint8_t i = get_box_value_from_cell(x); i < 3; i++) {
+      for (uint8_t k = get_box_value_from_cell(y); k < 3; k++) {
         section_values[i + k] = sudoku_board->board[i][k];
       }
     }
   }
-
-  return section_values;
 }
