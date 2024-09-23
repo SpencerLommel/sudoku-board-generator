@@ -37,32 +37,6 @@ sudoku_error_t sudoku_init(sudoku_board_t *sudoku_board) {
 }
 
 sudoku_error_t sudoku_generate_filled(sudoku_board_t *sudoku_board) {
-  uint8_t allowed[9] = {0}; // Array to hold allowed values for each cell
-  int allowed_size = 0;
-
-  for (uint8_t y = 0; y < 9; y++) {
-    for (uint8_t x = 0; x < 9; x++) {
-      allowed_values(sudoku_board, x, y, allowed, &allowed_size);
-
-      if (allowed_size == 0) {
-        return NO_ERROR;
-      }
-
-      uint8_t excl_arr[9] = {1};
-      for (int i = 0; i < allowed_size; i++) {
-        excl_arr[allowed[i] - 1] = 0; // Mark allowed values as not excluded
-      }
-
-      int random_value = gen_random_with_exclusion_arr(excl_arr);
-      if (random_value == -1) {
-        // Failed to generate a valid number, Sudoku generation failed
-        return NO_ERROR; // replace later with better error value
-      }
-
-      sudoku_board->board[x][y] = random_value;
-    }
-  }
-
   return NO_ERROR;
 }
 
