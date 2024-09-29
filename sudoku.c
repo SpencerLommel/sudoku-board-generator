@@ -16,6 +16,7 @@ static void combine_arr(uint8_t arr1[9], uint8_t arr2[9], uint8_t result[9],
                         int *result_size);
 static void allowed_values(sudoku_board_t *sudoku_board, uint8_t x, uint8_t y,
                            uint8_t result[9], int *result_size);
+static void shuffle_array(uint8_t *array, int size);
 
 // Necessary so people can index this with the error value
 // from their program to know what the issue is.
@@ -50,6 +51,8 @@ sudoku_error_t sudoku_generate_filled(sudoku_board_t *sudoku_board) {
       if (allowed_size == 0) {
         return NULL_PTR_ERROR;
       }
+
+      shuffle_array(allowed, allowed_size);
 
       uint8_t excl_arr[9] = {1};
       for (int i = 0; i < allowed_size; i++) {
@@ -180,4 +183,14 @@ static void allowed_values(sudoku_board_t *sudoku_board, uint8_t x, uint8_t y,
   }
 
   *result_size = index;
+}
+
+// Function to shuffle an array of integers
+static void shuffle_array(uint8_t *array, int size) {
+  for (int i = size - 1; i > 0; i--) {
+    int j = rand() % (i + 1);
+    uint8_t temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
 }
