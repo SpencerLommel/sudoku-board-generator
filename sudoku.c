@@ -37,29 +37,37 @@ sudoku_error_t sudoku_init(sudoku_board_t *sudoku_board) {
 }
 
 sudoku_error_t sudoku_generate_filled(sudoku_board_t *sudoku_board) {
-  uint8_t allowed[9] = {0}; // Array to hold allowed values for each cell
-  int allowed_size = 0;
-
   for (uint8_t y = 0; y < 9; y++) {
     for (uint8_t x = 0; x < 9; x++) {
+      if (sudoku_board->board[x][y] != 0) {
+        continue;
+      }
+
+      uint8_t allowed[9] = {0}; // Array to hold allowed values for each cell
+      int allowed_size = 0;
       allowed_values(sudoku_board, x, y, allowed, &allowed_size);
 
       if (allowed_size == 0) {
-        return NO_ERROR;
+        return NULL_PTR_ERROR;
       }
 
       uint8_t excl_arr[9] = {1};
       for (int i = 0; i < allowed_size; i++) {
-        excl_arr[allowed[i] - 1] = 0; // Mark allowed values as not excluded
+        excl_arr[allowed[i] - 1] = 0;
       }
 
-      int random_value = gen_random_with_exclusion_arr(excl_arr);
-      if (random_value == -1) {
-        // Failed to generate a valid number, Sudoku generation failed
-        return NO_ERROR; // replace later with better error value
+      for (int i = 0; i < allowed_size; i++) {
+        int random_value = allowed[i];
+        sudoku_board->board[x][y] = random_value;
+
+        if (sudoku_generate_filled(sudoku_board) == NO_ERROR) {
+          return NO_ERROR;
+        }
+
+        sudoku_board->board[x][y] = 0;
       }
 
-      sudoku_board->board[x][y] = random_value;
+      return NULL_PTR_ERROR;
     }
   }
 
@@ -67,22 +75,9 @@ sudoku_error_t sudoku_generate_filled(sudoku_board_t *sudoku_board) {
 }
 
 // Static methods
-static uint8_t get_box_value_from_cell(uint8_t cell) {
-  // This takes in a cell and returns the first value in the box
-  // Example: cell 5 is the second box (3x3) which starts at cell 4
-  // so returns 4
-  if (cell > 10 || cell < 1) {
-    return -1;
-  }
-  int new_value;
-  return (cell / 3) * 3;
-}
+static uint8_t get_box_value_from_cell(uint8_t cell) { return (cell / 3) * 3; }
 
 int gen_random_with_exclusion_arr(uint8_t excluded[9]) {
-  // Takes int[9] input in the format {1,1,0,0,0,0,0,0,0}
-  // With the example array above it can return any value between 3-9 but not
-  // 1,2 because they are excluded (denoted by 1) I know.. goofy syntax but it
-  // works :P
   int excluded_amt = 0;
   int allowed_ints[9];
 
@@ -111,22 +106,22 @@ static bool valueinarray(float val, float *arr, size_t n) {
 static void get_int_arr_of_section(sudoku_board_t *sudoku_board,
                                    sudoku_section_t section, uint8_t x,
                                    uint8_t y, uint8_t section_values[9]) {
-  // Must pass array of size 9 in section_values. This is okay because in
-  // columns, rows, and boxes there can only be 9 nums at most
   if (section == ROW) {
     for (uint8_t i = 0; i < 9; i++) {
       section_values[i] = sudoku_board->board[i][y];
     }
-  }
-  if (section == COLUMN) {
+  } else if (section == COLUMN) {
     for (uint8_t i = 0; i < 9; i++) {
       section_values[i] = sudoku_board->board[x][i];
     }
-  }
-  if (section == BOX) {
-    for (uint8_t i = get_box_value_from_cell(x); i < 3; i++) {
-      for (uint8_t k = get_box_value_from_cell(y); k < 3; k++) {
-        section_values[i + k] = sudoku_board->board[i][k];
+  } else if (section == BOX) {
+    uint8_t startRow = (x / 3) * 3;
+    uint8_t startCol = (y / 3) * 3;
+    int index = 0;
+    for (uint8_t i = 0; i < 3; i++) {
+      for (uint8_t j = 0; j < 3; j++) {
+        section_values[index++] =
+            sudoku_board->board[startRow + i][startCol + j];
       }
     }
   }
