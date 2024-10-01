@@ -130,8 +130,8 @@ static void get_int_arr_of_section(sudoku_board_t *sudoku_board,
   }
 }
 
-static void combine_arr(uint8_t arr1[9], uint8_t arr2[9], uint8_t result[9],
-                        int *result_size) {
+static void combine_arr(uint8_t arr1[9], uint8_t arr2[9], uint8_t arr3[9],
+                        uint8_t result[9], int *result_size) {
   bool seen[10] = {false};
   int index = 0;
 
@@ -143,6 +143,10 @@ static void combine_arr(uint8_t arr1[9], uint8_t arr2[9], uint8_t result[9],
     if (arr2[i] >= 1 && arr2[i] <= 9 && !seen[arr2[i]]) {
       seen[arr2[i]] = true;
       result[index++] = arr2[i];
+    }
+    if (arr3[i] >= 1 && arr3[i] <= 9 && !seen[arr3[i]]) {
+      seen[arr3[i]] = true;
+      result[index++] = arr3[i];
     }
   }
 
@@ -161,16 +165,13 @@ static void allowed_values(sudoku_board_t *sudoku_board, uint8_t x, uint8_t y,
 
   uint8_t combined_values[9] = {0};
   int combined_size = 0;
-  combine_arr(row_values, col_values, combined_values, &combined_size);
-
-  uint8_t temp_result[9] = {0};
-  int temp_size = 0;
-  combine_arr(combined_values, box_values, temp_result, &temp_size);
+  combine_arr(row_values, col_values, box_values, combined_values,
+              &combined_size);
 
   bool seen[10] = {false};
-  for (int i = 0; i < temp_size; i++) {
-    if (temp_result[i] >= 1 && temp_result[i] <= 9) {
-      seen[temp_result[i]] = true;
+  for (int i = 0; i < combined_size; i++) {
+    if (combined_values[i] >= 1 && combined_values[i] <= 9) {
+      seen[combined_values[i]] = true;
     }
   }
 
