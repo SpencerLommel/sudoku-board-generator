@@ -12,8 +12,8 @@
 
 static int gen_random_with_exclusion_arr(uint8_t excluded[9]);
 static uint8_t get_box_value_from_cell(uint8_t cell);
-static void combine_arr(uint8_t arr1[9], uint8_t arr2[9], uint8_t result[9],
-                        int *result_size);
+static void combine_arr(uint8_t arr1[9], uint8_t arr2[9], uint8_t arr3[9], uint8_t result[9], int *result_size);
+
 static void allowed_values(sudoku_board_t *sudoku_board, uint8_t x, uint8_t y,
                            uint8_t result[9], int *result_size);
 static void shuffle_array(uint8_t *array, int size);
